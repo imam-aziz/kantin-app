@@ -26,9 +26,10 @@ pipeline {
         }
         stage('Deploy ke Azure AKS') {
             steps {
+                // 'kube-config' adalah ID credential yang berisi teks dari Azure tadi
                 withKubeConfig([credentialsId: 'kube-config']) {
-                    // Perintah kubectl dijalankan lewat sh.exe
-                    bat "${SH} -c 'kubectl apply -f kantin-k8s.yaml'"
+                    // Kita tambahkan flag --kubeconfig agar dia tidak lari ke localhost
+                    bat "${SH} -c 'kubectl apply -f kantin-k8s.yaml --validate=false'"
                     bat "${SH} -c 'kubectl rollout restart deployment backend-kantin'"
                     bat "${SH} -c 'kubectl rollout restart deployment frontend-kantin'"
                 }
