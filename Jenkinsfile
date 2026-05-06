@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_USER = "imamaziz" 
-        GIT_REPO_URL = "https://github.com/imamaziz/kantin-app.git"
+        GIT_REPO_URL = "https://github.com/imam-aziz/kantin-app.git"
     }
     stages {
         stage('Checkout Code') {
