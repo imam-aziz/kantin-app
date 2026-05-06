@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Kantin - Praktikum 2</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        .identitas { background-color: #f4f4f4; padding: 15px; border-radius: 8px; border-left: 5px solid #0078d4; }
+        h1 { color: #333; }
+        ul { list-style-type: square; }
+        .input-group { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        input { padding: 8px; width: 250px; }
+        button { padding: 8px 15px; background-color: #0078d4; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #005a9e; }
+    </style>
+</head>
+<body>
+
+    <div class="identitas">
+        <h1 id="judul-katalog">Memuat Katalog...</h1>
+        <p><strong>Pemilik:</strong> <span id="owner-name">Mencari...</span></p>
+        <p><strong>NIM:</strong> <span id="owner-nim">Mencari...</span></p>
+    </div>
+
+    <h2 id="kantin-name"></h2>
+    
+    <h3>Daftar Menu:</h3>
+    <ul id="menu-list">
+        <li>Sedang mengambil data menu...</li>
+    </ul>
+
+    <div class="input-group">
+        <h3>Tambah Menu Baru:</h3>
+        <input type="text" id="menu-input" placeholder="Masukkan nama makanan/minuman...">
+        <button onclick="tambahMenu()">Tambah ke Daftar</button>
+    </div>
+
+    <script>
+        // Sesuai Instruksi Poin 1: Hanya menggunakan relative path '/api'
+        const API_URL = '/api';
+
+        // Fungsi untuk mengambil data dari backend
+        function loadData() {
+            fetch(`${API_URL}/info`)
+            .then(res => {
+                if (!res.ok) throw new Error('Gagal terhubung ke API');
+                return res.json();
+            })
+            .then(data => {
+                // Mengisi data identitas hasil Injection Variable dari YAML
+                document.getElementById('judul-katalog').innerText = data.judul_katalog;
+                document.getElementById('owner-name').innerText = data.pemilik;
+                document.getElementById('owner-nim').innerText = data.nim;
+                document.getElementById('kantin-name').innerText = data.nama_kantin;
+
+                // Mengisi daftar menu
+                const list = document.getElementById('menu-list');
+                list.innerHTML = '';
+                data.menu.forEach(item => {
+                    let li = document.createElement('li');
+                    li.innerText = item;   
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                document.getElementById('menu-list').innerHTML = `<li style="color:red">Gagal memuat data. Pastikan Backend & Ingress berjalan.</li>`;
+            });
+        }
+
+        // Fungsi untuk menambah menu baru
+        function tambahMenu() {
+            const input = document.getElementById('menu-input');
+            const itemBaru = input.value;
+
+            if (!itemBaru) {
+                alert("Nama menu tidak boleh kosong!");
+                return;
+            }
+
+            fetch(`${API_URL}/add-menu`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item: itemBaru })
+            })
+            .then(res => res.json())
+            .then(() => {
+                input.value = ''; // Kosongkan input
+                loadData();       // Refresh daftar menu
+            })
+            .catch(err => alert("Gagal menambah menu: " + err));
+        }
+
+        // Jalankan fungsi saat halaman pertama kali dibuka
+        loadData();
+    </script>
+
+</body>
+</html>
