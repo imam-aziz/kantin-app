@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Deploy ke Azure AKS') {
             steps {
-                withKubeConfig([credentialsId: 'aks-config']) {
+                withKubeConfig([credentialsId: 'kube-config']) {
                     sh "kubectl apply -f kantin-k8s.yaml"
                     sh "kubectl rollout restart deployment backend-kantin"
                     sh "kubectl rollout restart deployment frontend-kantin"
