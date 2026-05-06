@@ -26,18 +26,17 @@ pipeline {
         }
         stage('Deploy ke Azure AKS') {
             steps {
-                // Pastikan credentialsId ini SAMA dengan yang kamu buat di Jenkins
                 withKubeConfig([credentialsId: 'kube-config']) {
                     script {
-                        // Trik maut: ambil path file config sementara yang dibuat Jenkins
-                        def kubeconfigFile = env.KUBECONFIG
+                        // Ubah backslash Windows (\) jadi forward slash (/) agar sh.exe paham
+                        def kubePath = env.KUBECONFIG.replace("\\", "/")
                         
-                        // Jalankan apply dengan flag --kubeconfig
-                        bat "${SH} -c \"kubectl apply -f kantin-k8s.yaml --kubeconfig='${kubeconfigFile}' --validate=false\""
+                        // Perintah apply menggunakan path yang sudah diperbaiki
+                        bat "${SH} -c \"kubectl apply -f kantin-k8s.yaml --kubeconfig='${kubePath}' --validate=false\""
                         
-                        // Restart deployment agar narik image terbaru
-                        bat "${SH} -c \"kubectl rollout restart deployment backend-kantin --kubeconfig='${kubeconfigFile}'\""
-                        bat "${SH} -c \"kubectl rollout restart deployment frontend-kantin --kubeconfig='${kubeconfigFile}'\""
+                        // Restart deployment
+                        bat "${SH} -c \"kubectl rollout restart deployment backend-kantin --kubeconfig='${kubePath}'\""
+                        bat "${SH} -c \"kubectl rollout restart deployment frontend-kantin --kubeconfig='${kubePath}'\""
                     }
                 }
             }
