@@ -28,13 +28,13 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kube-config']) {
                     script {
-                        // Ubah backslash Windows (\) jadi forward slash (/) agar sh.exe paham
+                        // INI KUNCINYA: Ngerubah C:\Path jadi C:/Path
                         def kubePath = env.KUBECONFIG.replace("\\", "/")
                         
-                        // Perintah apply menggunakan path yang sudah diperbaiki
+                        // Apply YAML
                         bat "${SH} -c \"kubectl apply -f kantin-k8s.yaml --kubeconfig='${kubePath}' --validate=false\""
                         
-                        // Restart deployment
+                        // Restart Deployment (Poin 4c)
                         bat "${SH} -c \"kubectl rollout restart deployment backend-kantin --kubeconfig='${kubePath}'\""
                         bat "${SH} -c \"kubectl rollout restart deployment frontend-kantin --kubeconfig='${kubePath}'\""
                     }
