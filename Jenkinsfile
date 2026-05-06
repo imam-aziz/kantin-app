@@ -16,7 +16,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     bat "docker build -t ${USER}/kantin-backend:latest ./backend"
                     bat "docker build -t ${USER}/kantin-frontend:latest ./frontend"
-                    bat "echo ${PASS} | docker login -u ${USER} --password-stdin"
+                    bat "docker login -u %USER% -p %PASS%"
                     bat "docker push ${USER}/kantin-backend:latest"
                     bat "docker push ${USER}/kantin-frontend:latest"
                 }
