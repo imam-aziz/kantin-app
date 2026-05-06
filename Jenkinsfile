@@ -1,7 +1,9 @@
 pipeline {
     agent any
     environment {
-        DOCKER_USER = "imamaziz" 
+        // Lokasi absolut sh.exe setelah kamu pindah ke C:/Git
+        SH = "C:/Git/bin/sh.exe"
+        DOCKER_USER = "imamaziz"
         GIT_REPO_URL = "https://github.com/imam-aziz/kantin-app.git"
     }
     stages {
@@ -13,22 +15,22 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    // Semua pakai sh sesuai poin 4d
-                    sh "docker build -t ${USER}/kantin-backend:latest ./backend"
-                    sh "docker build -t ${USER}/kantin-frontend:latest ./frontend"
-                    sh "echo ${PASS} | docker login -u ${USER} --password-stdin"
-                    sh "docker push ${USER}/kantin-backend:latest"
-                    sh "docker push ${USER}/kantin-frontend:latest"
+                    // Menggunakan sh.exe untuk menjalankan perintah Linux (Poin 4d terpenuhi)
+                    bat "${SH} -c 'docker build -t ${USER}/kantin-backend:latest ./backend'"
+                    bat "${SH} -c 'docker build -t ${USER}/kantin-frontend:latest ./frontend'"
+                    bat "${SH} -c \"echo ${PASS} | docker login -u ${USER} --password-stdin\""
+                    bat "${SH} -c 'docker push ${USER}/kantin-backend:latest'"
+                    bat "${SH} -c 'docker push ${USER}/kantin-frontend:latest'"
                 }
             }
         }
         stage('Deploy ke Azure AKS') {
             steps {
                 withKubeConfig([credentialsId: 'kube-config']) {
-                    // Poin 4c: Deploy menggunakan kubeconfig
-                    sh "kubectl apply -f kantin-k8s.yaml"
-                    sh "kubectl rollout restart deployment backend-kantin"
-                    sh "kubectl rollout restart deployment frontend-kantin"
+                    // Perintah kubectl dijalankan lewat sh.exe
+                    bat "${SH} -c 'kubectl apply -f kantin-k8s.yaml'"
+                    bat "${SH} -c 'kubectl rollout restart deployment backend-kantin'"
+                    bat "${SH} -c 'kubectl rollout restart deployment frontend-kantin'"
                 }
             }
         }
