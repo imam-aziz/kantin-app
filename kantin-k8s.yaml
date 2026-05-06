@@ -21,9 +21,9 @@ spec:
         # --- IDENTITY INJECTION START ---
         env:
         - name: NAMA_PRAKTIKAN
-          value: "Nama Lengkap Kamu" # Ganti dengan Nama kamu
+          value: "Imam Azizun Hakim" # Ganti dengan Nama kamu
         - name: NIM_PRAKTIKAN
-          value: "220XXXXX"           # Ganti dengan NIM kamu
+          value: "2404420"           # Ganti dengan NIM kamu
         # --- IDENTITY INJECTION END ---
 ---
 apiVersion: v1

@@ -13,11 +13,19 @@ kantin_data = {
     "menu": ["Nasi Goreng", "Es Teh", "Gorengan"]
 }
 
-@app.route('/api/info', methods=['GET'])
+@app.route('/api/menu', methods=['GET'])
 def get_info():
-    return jsonify(kantin_data)
+    # Menambahkan data identitas ke dalam response agar terbaca oleh index.html
+    response = {
+        "nama_kantin": kantin_data["nama_kantin"],
+        "menu": kantin_data["menu"],
+        "pemilik": nama_owner,
+        "nim": nim_owner,
+        "judul_katalog": "Katalog Kantin - Praktikum 2"
+    }
+    return jsonify(response)
 
-@app.route('/api/add-menu', methods=['POST'])
+@app.route('/api/menu/add-menu', methods=['POST'])
 def add_menu():
     new_item = request.json.get('item')
     if new_item:

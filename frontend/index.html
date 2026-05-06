@@ -42,7 +42,7 @@
 
         // Fungsi untuk mengambil data dari backend
         function loadData() {
-            fetch(`${API_URL}/info`)
+            fetch('/api/menu')
             .then(res => {
                 if (!res.ok) throw new Error('Gagal terhubung ke API');
                 return res.json();
@@ -79,7 +79,7 @@
                 return;
             }
 
-            fetch(`${API_URL}/add-menu`, {
+            fetch('/api/menu/add-menu', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ item: itemBaru })
