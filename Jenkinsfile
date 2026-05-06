@@ -14,20 +14,20 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh "docker build -t ${USER}/kantin-backend:latest ./backend"
-                    sh "docker build -t ${USER}/kantin-frontend:latest ./frontend"
-                    sh "echo ${PASS} | docker login -u ${USER} --password-stdin"
-                    sh "docker push ${USER}/kantin-backend:latest"
-                    sh "docker push ${USER}/kantin-frontend:latest"
+                    bat "docker build -t ${USER}/kantin-backend:latest ./backend"
+                    bat "docker build -t ${USER}/kantin-frontend:latest ./frontend"
+                    bat "echo ${PASS} | docker login -u ${USER} --password-stdin"
+                    bat "docker push ${USER}/kantin-backend:latest"
+                    bat "docker push ${USER}/kantin-frontend:latest"
                 }
             }
         }
         stage('Deploy ke Azure AKS') {
             steps {
                 withKubeConfig([credentialsId: 'kube-config']) {
-                    sh "kubectl apply -f kantin-k8s.yaml"
-                    sh "kubectl rollout restart deployment backend-kantin"
-                    sh "kubectl rollout restart deployment frontend-kantin"
+                    bat "kubectl apply -f kantin-k8s.yaml"
+                    bat "kubectl rollout restart deployment backend-kantin"
+                    bat "kubectl rollout restart deployment frontend-kantin"
                 }
             }
         }
